@@ -1,9 +1,21 @@
-import "reflect-metadata";
 import app from "./app";
 import config from "../config";
+import { connectDB } from "../database/mongodb";
+import { connectRedis } from "../cache/redis";
+import logger from "../logging/logger";
 
-const port = config.port;
+const startServer = async () => {
+  try {
+    await connectDB();
+    await connectRedis();
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-});
+    app.listen(config.port, () => {
+      logger.info(`Server is running on port ${config.port}`);
+    });
+  } catch (error) {
+    logger.error("Failed to start server:", error);
+    process.exit(1);
+  }
+};
+
+startServer();

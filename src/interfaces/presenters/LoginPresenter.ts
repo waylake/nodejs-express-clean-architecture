@@ -1,8 +1,8 @@
 import { injectable } from "inversify";
-import { LoginResponseDTO } from "../../domain/usecases/dto/LoginDTO";
 
-export interface PresentableLoginResult {
-  token: string;
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
   user: {
     id: string;
     username: string;
@@ -11,17 +11,18 @@ export interface PresentableLoginResult {
 
 @injectable()
 export class LoginPresenter {
-  present(loginResponse: LoginResponseDTO): PresentableLoginResult {
-    // In a real application, you would generate a proper JWT token here
-    const token = Buffer.from(
-      `${loginResponse.userId}:${loginResponse.username}`,
-    ).toString("base64");
-
+  present(
+    accessToken: string,
+    refreshToken: string,
+    userId: string,
+    username: string,
+  ): LoginResponse {
     return {
-      token,
+      accessToken,
+      refreshToken,
       user: {
-        id: loginResponse.userId,
-        username: loginResponse.username,
+        id: userId,
+        username,
       },
     };
   }
